@@ -14,7 +14,7 @@
 		"persistent": false,
 		"scripts": [ "bg.js" ]
 	},
-	"content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com/ipfs-api@9.0.0/dist/index.min.js https://cdn.jsdelivr.net/npm/sweetalert2@7.13.1/dist/sweetalert2.all.min.js https://cdn.jsdelivr.net/npm/golos-js@0.5.30/dist/golos.min.js https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.2.0/min/dropzone.min.js https://unpkg.com/i18next/i18next.js https://cdnjs.cloudflare.com/ajax/libs/i18next-xhr-backend/1.5.1/i18nextXHRBackend.min.js https://padolsey.github.io/findAndReplaceDOMText/src/findAndReplaceDOMText.js https://github.com/isaacs/node-glob/issues/167; object-src 'self'",
+	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 	"browser_action": {
 		"default_icon": "icon_128.png",
 		"default_title": "GolosImages"
