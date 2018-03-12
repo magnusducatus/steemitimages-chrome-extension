@@ -4,7 +4,6 @@ body {
 html {
   position: relative;
   min-height: 100%;
-  min-width: 800px;
 }
 
 @font-face {
