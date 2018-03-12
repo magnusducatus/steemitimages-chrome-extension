@@ -10,6 +10,9 @@
 		"48": "icon_48.png",
 		"128": "icon_128.png"
 	},
+	"description": "GolosImages - this microservice for storing images on the blockchain Golos and IPFS. This platform is a thin client, that works without a backend (only frontend and blockchain) directly on the GitHub Pages (through CloudFlare).",
+	"homepage_url": "https://golosimages.com/",
+	"offline_enabled": false,
 	"background": {
 		"persistent": false,
 		"scripts": [ "bg.js" ]
