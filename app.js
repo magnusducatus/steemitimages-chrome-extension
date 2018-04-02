@@ -1,10 +1,40 @@
+localStorage.wif && localStorage.username ? logOutProcc() : '';
 initLang('en');
-let ipfs = window.IpfsApi({
-    host: '91.201.41.253',
-    port: '5001',
-    protocol: 'http'
-});
+let ipfs;
+let host;
+function initConnection(connection){
+    ipfs = window.IpfsApi({
+        host: connection.api.address,
+        port: connection.api.port,
+        protocol: connection.api.protocol
+    });
+    host = `${connection.gateway.protocol}://${connection.gateway.address}:${connection.gateway.port}/ipfs/`;
+};
+const connectionDefault = {
+    api :{
+        protocol:`http`,
+        port:`5001`,
+        address:`91.201.41.253`
+    },
+    gateway: {
+        protocol:`http`,
+        port:`7777`,
+        address:`91.201.41.253`
+    }
+}, connectionNew = {
+    api :{
+        protocol:`http`,
+        port:`5001`,
+        address:`91.201.41.253`
+    },
+    gateway: {
+        protocol:`http`,
+        port:`7777`,
+        address:`91.201.41.253`
+    }
+}
 
+initConnection(connectionDefault)
 swal.setDefaults({
     buttonsStyling: true,
     confirmButtonText: '<span class="icon-checkmark"></span> Ok',
@@ -14,10 +44,13 @@ swal.setDefaults({
 });
 
 
-golos.config.set('websocket', 'wss://ws.testnet3.golos.io');
+golos.config.set('websocket', 'wss://ws.testnet.golos.io');
 golos.config.set('chain_id', '5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679');
 
-const host = 'http://91.201.41.253:7777/ipfs/';
+
+const hosts = new Array('http://91.201.41.253:5001/ipfs/', 'http://91.201.41.253:7777/ipfs/');
+
+
 
 let arrIpfs = [];
 
@@ -54,7 +87,7 @@ function copyToGolos(e) {
         elem = true;
 
     } else {}
-    if ( ! elem) {
+    if (!elem) {
         arrGolos.add(this.id);
         tr.setAttribute('class', 'table-success');
         this.className = 'btn btn-danger';
@@ -105,18 +138,30 @@ function copyLinkGolos(e) {
     }
 }
 
+function progressCalc() {
+    let result = arrProgress.length * 100 / progressLength;
+    document.getElementById('loaderDiv').style.display = 'block';
+    document.getElementById('loader').style.display = 'block';
+    document.getElementById('progressBar').innerHTML = `<div class="progress">
+<div class="progress-bar" role="progressbar" style="width: ${result}%;" aria-valuenow="${arrProgress.length}" aria-valuemin="0" aria-valuemax="${progressLength}">${result.toFixed(0)}%</div>
+</div>`;
+}
 //data sending to ipfs
-function test(data) {
+function sendToIpfs(data) {
     const tb = document.getElementById('tbody');
 
     const files = [{
         path: data.name,
         content: data.body
     }];
+    progressCalc();
     /*ipfs.files.add(new node.types.Buffer(data.body), function(err, file) {*/
     ipfs.files.add(files, function(err, file) {
         if (err) swal('Error');
         else {
+
+            arrProgress.push(file);
+            progressCalc();
             for (let i = 0; i < file.length; i++) {
                 arrTablTd.push(file);
                 let tr = document.createElement('tr');
@@ -226,24 +271,33 @@ function test(data) {
             let tab = document.getElementById('table');
             //arrTablTd.length > 0 ? tab.style.display = 'block' : tab.style.display = 'none';
             arrTablTd.length > 0 || arrJson.length > 0 ? tab.removeAttribute('hidden') : tab.setAttribute('hidden', 'true')
-            let elemIpfs = document.getElementsByClassName('elementIpfs');
-            let uploadGolos = document.getElementById('upload-golos');
+            if (arrProgress.length == progressLength) {
+                document.getElementById('progressBar').removeChild(document.getElementsByClassName('progress')[0]);
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('loaderDiv').style.display = 'none';
+                arrProgress = [];
+                document.getElementsByTagName('body').style = `margin-bottom: 60px;`;
+            }
         }
-    })
+    });
 
 }
+let arrProgress = [];
+let progressLength = '';
 
 function iter() {
+    document.getElementsByTagName('body').style = `background: #fff;width: 100%;height: 100%;position: fixed;display: block;top: 0;opacity: 0.8;`
+    progressLength = arrIpfs.length;
     for (let i = 0; i < arrIpfs.length; i++) {
-        test(arrIpfs[i]);
+        sendToIpfs(arrIpfs[i]);
     }
     if (arrIpfs.length != 0) swal({
-        title: 'Added successfully! Check the table!', 
-        type: 'success', 
-        showConfirmButton: false, 
-        position: 'bottom-left', 
-        timer: 3000, 
-        toast: true, 
+        title: 'Added successfully! Check the table!',
+        type: 'success',
+        showConfirmButton: false,
+        position: 'bottom-left',
+        timer: 3000,
+        toast: true,
         animation: 'slide-from-top'
     });
     arrIpfs = [];
@@ -335,11 +389,19 @@ function retrieveImageFromClipboardAsBlob(pasteEvent, callback) {
 Dropzone.options.dropzone = {
     //accept file mime-type
     acceptedFiles: 'image/jpeg, image/jpg, image/png',
-    dictDefaultMessage: 'Drag&Drop files here or click to select files',
+    dictDefaultMessage: `<div class="d-flex justify-content-center">
+        <div class="text-left">
+        <br>Drag&Drop files here or click to select files.
+                            <div class="text-center">OR</div>
+    1. Click on the window you want to capture.
+    <br>2. Press <span id="step0"><kbd>Alt</kbd> + <kbd>Print Screen</kbd></span>.
+    <br>3. Click back on this webpage.
+    <br>4. Press <span id="step1"><kbd>Ctrl</kbd> + <kbd>V</kbd></span> to upload the image.
+    <br><button id="instruction-for"type="button" class="btn btn-link">instruction for <span id="step2">Mac</span></button></div>
+    </div>`,
     autoProcessQueue: false,
     init: function() {
         window.addEventListener("paste", (pasteEvent) => {
-            console.log(pasteEvent);
             //var items = pasteEvent.clipboardData.items;
             retrieveImageFromClipboardAsBlob(pasteEvent, (file) => {
                 //let myD = new Dropzone('#dropzone');
@@ -350,15 +412,49 @@ Dropzone.options.dropzone = {
                         //window.open(imageDataBase64);
                         file.status = "added";
                         this.emit('addedfile', file);
-                        this.emit("thumbnail", file, imageDataBase64); 
+                        this.emit("thumbnail", file, imageDataBase64);
                     }
                 });
             }, false);
 
         }, false);
+        this.on('dragenter', function(event) {
+            console.log('enter');
+            document.getElementById('dropzone').style.border = '5px dashed #80A6FF';
+            document.getElementById('dropzone').style.background = '#696969'
+            document.getElementById('dropzone').style.color = 'white';
 
+        });
+        this.on('dragover', function(event) {
+            console.log('over');
+            document.getElementById('dropzone').style.border = '5px dashed #80A6FF';
+            document.getElementById('dropzone').style.background = '#696969';
+            document.getElementById('dropzone').style.color = 'white';
+        });
+        this.on('drop', function() {
+            document.getElementById('dropzone').style.border = '2px dashed #80A6FF';
+            document.getElementById('dropzone').style.background = ' #FFFFFF';
+            document.getElementById('dropzone').style.color = 'black';
+        });
+        this.on('dragleave', function() {
+            document.getElementById('dropzone').style.border = '2px dashed #80A6FF';
+            document.getElementById('dropzone').style.background = ' #FFFFFF';
+            document.getElementById('dropzone').style.color = 'black';
+        });
+        let mark=true;
+        document.getElementById('instruction-for').addEventListener('click',(e)=>{
+            e.stopPropagation();
+            mark = !mark;
+            let steps = {
+                true:['<kbd>Alt</kbd> + <kbd>Print Screen</kbd>','<kbd>Ctrl</kbd> + <kbd>V</kbd>','Mac'],
+                false:['<kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>Cmd</kbd> + <kbd>3</kbd>','<kbd>Cmd</kbd> + <kbd>V</kbd>','Windows']
+            }
+            for(let i = 0; i < 3; i++){
+                document.getElementById('step'+i).innerHTML = steps[mark][i];
+            }
+            
+        })
         this.on("addedfile", function(file) {
-            console.log(file)
             //second check for mime-type
             if (file.type != 'image/jpeg' || file.type != 'image/jpg' || file.type != 'image/png') {
 
@@ -372,7 +468,6 @@ Dropzone.options.dropzone = {
                     body: '',
                     hash: '',
                 };
-                //!!!!!This is for version without buffer
                 obj.body = ipfs.Buffer(data.target.result);
                 //obj.body = data.target.result;
                 obj.name = fileList.name;
@@ -388,7 +483,7 @@ Dropzone.options.dropzone = {
             //remove all files
             document.getElementById("upload-btn").addEventListener("click", function() {
                 let elem = document.getElementsByClassName('elementIpfs');
-                for(let i = 0; i < elem.length; i++) {
+                for (let i = 0; i < elem.length; i++) {
                     document.getElementById('dropzone').removeChild(elem[i]);
                 }
                 _this.removeAllFiles();
@@ -461,14 +556,28 @@ function sendRequest(wifPar, authorPar, status) {
             arrGolos.size > 0 ? uploadGolos.removeAttribute('hidden') : uploadGolos.setAttribute('hidden', 'true')
 
             swal({
-                html: 'Images added'
+                html: document.getElementById('image-added').innerHTML
             })
         } else console.error(err);
     }); // add post
 }
-async function uploadToGolos() {
+
+function uploadToGolos() {
     if (wif == '') {
-        await auth();
+        auth(() => {
+            swal({
+                type: 'success',
+                title: 'Success',
+                html: `Authorization was successful!`,
+                preConfirm: async () => {
+                    golos.api.getContent(username, constPermlik, function(err, result) {
+                        result.id == 0 ? sendRequest(wif, username, 'post') : sendRequest(wif, username, 'comment');
+                        if (err) swal(err);
+                    });
+                }
+            });
+            logOutProcc();
+        });
     } else {
         golos.api.getContent(username, constPermlik, function(err, result) {
             result.id == 0 ? sendRequest(wif, username, 'post') : sendRequest(wif, username, 'comment');
@@ -594,7 +703,7 @@ function getPostJson(authorPar, permlinkPar, result) {
     for (let i in this.postJ.data) arrJson.push(this.postJ.data[i]);
     if (result.children == 0) {
         swal({
-            html: 'Check table for records'
+            html: document.getElementById('check-table-for-records').innerHTML
         });
         renderTableFromJson();
     } else {
@@ -608,20 +717,31 @@ function getPostJson(authorPar, permlinkPar, result) {
             renderTableFromJson();
         });
     }
-
-
-
-
 }
 
 
-async function getUrls() {
+function getUrls() {
     if (wif == '') {
-        await auth();
+        auth(() => {
+            swal({
+                type: 'success',
+                title: 'Success',
+                html: `Authorization was successful!`,
+                preConfirm: async () => {
+                    golos.api.getContent(username, constPermlik, function(err, result) {
+                        result.id == 0 ? swal({
+                            html: document.getElementById('no-records-IPFS').innerHTML
+                        }) : getPostJson(username, constPermlik, result);
+                        if (err) swal(err);
+                    });
+                }
+            });
+            logOutProcc();
+        });
     } else {
         golos.api.getContent(username, constPermlik, function(err, result) {
             result.id == 0 ? swal({
-                html: 'You have\'t got records in IPFS'
+                html: document.getElementById('no-records-IPFS').innerHTML
             }) : getPostJson(username, constPermlik, result);
             if (err) swal(err);
         });
@@ -634,49 +754,99 @@ document.getElementById('upload-golos').addEventListener('click', uploadToGolos,
 
 document.getElementById('aboutGolosImagesCallBtn').addEventListener('click', () => {
     swal({
-        title: 'About this project!',
-        html: `<div>
-            <p class="float-left text-left">
-            GolosImages - this microservice for storing images on the  blockchain <a target="_blank" href="https://golos.io">Golos</a> and <a target="_blank" href="https://ipfs.io/">IPFS</a>. This platform is a thin client, that works without a backend (only frontend and blockchain) directly on the GitHub Pages (through CloudFlare).
-            </p>
-            <ul class="float-left text-left">
-            We use:
-            <li><a target="_blank" href="https://github.com/GolosChain/golos-js">Golos.js</a> - the JavaScript API for Golos blockchain;</li>
-            <li><a target="_blank" href="https://github.com/twbs/bootstrap">Bootstrap</a> - the most popular HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web;</li>
-            <li><a target="_blank" href="http://www.dropzonejs.com">Dropzone</a> - DropzoneJS is an open source library that provides drag’n’drop file uploads with image previews;</li>
-            <li><a target="_blank" href="https://github.com/lipis/flag-icon-css">Flag-icon-css</a> - A collection of all country flags in SVG;</li>
-            <li><a target="_blank" href="https://github.com/padolsey/findAndReplaceDOMText">FindAndReplaceDOMText</a> - searches for regular expression matches in a given DOM node and replaces or wraps each match with a node or piece of text that you can specify;</li>
-            <li><a target="_blank" href="https://www.i18next.com">I18next</a> - is an internationalization-framework written in and for JavaScript;</li>
-            <li><a target="_blank" href="https://github.com/ipfs/js-ipfs-api">Js-ipfs-api</a> - A client library for the IPFS HTTP API, implemented in JavaScript;</li>
-            <li><a target="_blank" href="https://github.com/limonte/sweetalert2">SweetAlert2</a> - a beautiful, responsive, customizable, accessible replacement for JavaScript's popup boxes.</li>
-            </ul>
-            </div>`,
+        title: document.getElementById('about-html-title').innerHTML,
+        html: document.getElementById('about-html').innerHTML,
+        type: 'info',
+        buttonsStyling: false,
+        confirmButtonClass: 'btn btn-success btn-lg',
+        confirmButtonText: document.getElementById('button-cool').innerHTML,
+        position: 'top',
+        showCloseButton: true
+    });
+}, false);
+document.getElementById('integration').addEventListener('click', function(e) {
+    swal({
+        title: 'About integration!',
+        html: document.getElementById('integration-html').innerHTML,
         type: 'info',
         buttonsStyling: false,
         confirmButtonClass: 'btn btn-success btn-lg',
         confirmButtonText: '<span class="icon-checkmark"></span> Cool!',
         position: 'top',
         showCloseButton: true
-    });
-}, false);
-let dropzone = document.getElementById('dropzone');
-document.getElementById('dropzone').addEventListener('dragenter', function(e) {
-    this.style.border = '5px dashed #80A6FF';
-    dropzone.style.background = '#696969'
-    dropzone.style.color = 'white';
+    })
+
 })
-document.getElementById('dropzone').addEventListener('dragover', function(e) {
-    this.style.border = '5px dashed #80A6FF';
-    dropzone.style.background = '#696969';
-    dropzone.style.color = 'white';
-})
-document.getElementById('dropzone').addEventListener('drop', function(e) {
-    this.style.border = '2px dashed #80A6FF';
-    dropzone.style.background = ' #FFFFFF';
-    dropzone.style.color = 'black';
-});
-document.getElementById('dropzone').addEventListener('dragleave', function(e) {
-    this.style.border = '2px dashed #80A6FF';
-    dropzone.style.background = ' #FFFFFF';
-    dropzone.style.color = 'black';
-});
+document.getElementById('change-port').addEventListener('click', async function(e) {
+            
+            let ss = await swal({
+                    title: document.getElementById('change-port-html-title').innerHTML,
+                    html: document.getElementById('change-port-html').innerHTML,
+                    footer: document.getElementById('default-div-node').innerHTML,    
+                    type: 'info',
+                    buttonsStyling: true,
+                    position: 'top',
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    preConfirm: async () => {
+                        let { obj:full, sendObj:result } = await getInputsFromChange(),
+                            good = {
+                                api : '',
+                                gateway : ''
+                            }
+                        for (let i in result) {
+                            result[i].length != 3 && result[i].length > 0 ? good[i] = false : good[i] = true;
+                        }
+                        for (let i in full) {
+                            if(full[i].some((item) => {return item.value == '' && !good[i]})) {
+                                console.log(i, full[i], false);
+                                full[i].forEach((item) => {
+                                    if (item.value == '') item.setAttribute('class', 'form-control is-invalid');
+                                    else item.setAttribute('class', 'form-control');
+                                });
+                            }
+                        }
+                        if ( good.api && good.gateway) {
+                            for(let i in full) {
+                                full[i].forEach((item) => {
+                                    let arr = item.id.split('-'), conn = connectionNew[arr[1]];
+                                    if(item.value!='') conn[arr[2]] = item.value;
+                                });
+                            }
+                            return true;
+                        } else {
+                            return new Promise(resolve => {
+                                swal.showValidationError(`Please enter full gateway or&and api inputs`);
+                                resolve();
+                            })
+                        }  
+                    }
+                });
+                initConnection(connectionNew)
+            })
+
+
+        async function getInputsFromChange() {
+            let obj = {
+                api: [],
+                gateway: [],
+            }
+            sendObj = {
+                api: [],
+                gateway: []
+            }
+            let arr = [];
+            let ss = document.getElementById('change-port-html').getElementsByTagName('input');
+
+            for (let i = 0; i < ss.length; i++) {
+                obj[ss[i].id.split('-')[1]].push(ss[i]);
+
+            }
+            for (let i in sendObj) {
+                sendObj[i] = obj[i].filter((item) => {
+                    if (item.value != '') return item;
+                });
+            }
+            return {sendObj, obj};
+        }
+
