@@ -64,8 +64,9 @@ swal.setDefaults({
 });
 
 
-golos.config.set('websocket', 'wss://ws.testnet.golos.io');
-golos.config.set('chain_id', '5876894a41e6361bde2e73278f07340f2eb8b41c2facd29099de9deef6cdb679');
+steem.config.set('websocket', 'wss://testnet.steem.vc');
+steem.config.set('chain_id', '79276aea5d4877d9a25892eaa01b0adf019d3e5cb12a97478df3298ccdd01673');
+steem.config.set('address_prefix', 'STX');
 
 
 const hosts = ['http://91.201.41.253:5001/ipfs/', 'http://91.201.41.253:7777/ipfs/'];
@@ -96,7 +97,7 @@ setPlaceholderIPFS(localStorage.connectionOption);
 
 let arrIpfs = [],
     arrTablTd = [],
-    arrGolos = new Set(),
+    arrSteemit = new Set(),
     arrJson = [];
 
 setInterval(checkOnline, 3000);
@@ -115,11 +116,11 @@ function checkOnline() {
         })
 }
 
-function copyToGolos() {
+function copyToSteemit() {
     let tr = document.getElementById('tr' + this.id),
         but = document.getElementsByClassName(this.id),
         elem;
-    if (arrGolos.delete(this.id)) {
+    if (arrsteem.delete(this.id)) {
         tr.setAttribute('class', '');
         this.className = 'btn btn-success';
         this.innerHTML = '<span class="icon-checkmark"></span> Select to save';
@@ -127,13 +128,13 @@ function copyToGolos() {
 
     } else {}
     if (!elem) {
-        arrGolos.add(this.id);
+        arrsteem.add(this.id);
         tr.setAttribute('class', 'table-success');
         this.className = 'btn btn-danger';
         this.innerHTML = '<span class="icon-cross"></span> Select to unsave';
     }
-    let uploadGolos = document.getElementById('upload-golos');
-    arrGolos.size > 0 ? uploadGolos.removeAttribute('hidden') : uploadGolos.setAttribute('hidden', 'true')
+    let uploadSteemit = document.getElementById('upload-Steemit');
+    arrsteem.size > 0 ? uploadsteem.removeAttribute('hidden') : uploadsteem.setAttribute('hidden', 'true')
 }
 
 function copyLink(e) {
@@ -175,7 +176,7 @@ function arrayBufToB64(buffer) {
     return window.btoa(binary);
 }
 
-function copyLinkGolos(e) {
+function copyLinkSteemit(e) {
     this.id = e.target.id;
     document.getElementById(this.id).value = this.id;
     document.getElementById(this.id).select();
@@ -309,7 +310,7 @@ function sendToIpfs(data) {
                 td4but2.type = 'button';
                 td4but2.innerHTML = '<span class="icon-checkmark"></span> Select to save';
                 td4but2.id = file[i].hash;
-                td4but2.onclick = copyToGolos;
+                td4but2.onclick = copyToSteemit;
                 td4.appendChild(td4div1);
                 td4div1.appendChild(td4but1);
                 td4div1.appendChild(td4br);
@@ -568,18 +569,18 @@ Dropzone.options.dropzone = {
     }
 
 };
-let constPermlik = 'golos-save-url-test1';
+let constPermlik = 'Steemit-save-url-test1';
 // if permlink NOW be equal to BEFORE, before will change 
 // if parentPerm == perm - ok
 function sendRequest(wifPar, authorPar, status) {
     this.body = ''; // post text
     this.jsonMetadata = {
-        app: 'golosimages/0.1',
-        canonical: `https://golosimages.com#${ username }/${ constPermlik }`,
-        app_account: 'golosapps',
+        app: 'Steemitimages/0.1',
+        canonical: `https://Steemitimages.com#${ username }/${ constPermlik }`,
+        app_account: 'Steemitapps',
         data: []
     };
-    arrGolos.forEach((value) => {
+    arrsteem.forEach((value) => {
         this.jsonMetadata.data.push(host + value);
         this.body += '<p><img src="' + host + value + '"></img>';
     });
@@ -588,7 +589,7 @@ function sendRequest(wifPar, authorPar, status) {
     this.wif = wifPar; // // private posting key
     //this.permlink = 'testphotook'; // post url-adress
     //this.parentPermlink = 'photo'; // main tag
-    constPermlik != this.permlink ? this.parentAuthor = '' : this.parentAuthor = 'golos';
+    constPermlik != this.permlink ? this.parentAuthor = '' : this.parentAuthor = 'Steemit';
     constPermlik != this.permlink ? this.parentPermlink = 'post' : this.parentPermlink = this.permlink;
     if (status == 'comment') {
         this.parentAuthor = this.author;
@@ -601,12 +602,12 @@ function sendRequest(wifPar, authorPar, status) {
     }
     this.title = 'IPFS images'; // post title
 
-    golos.broadcast.comment(this.wif, this.parentAuthor, this.parentPermlink, this.author, this.permlink, this.title, this.body, this.jsonMetadata, function(err, result) {
+    steem.broadcast.comment(this.wif, this.parentAuthor, this.parentPermlink, this.author, this.permlink, this.title, this.body, this.jsonMetadata, function(err, result) {
         if (!err) {
-            arrGolos.clear();
+            arrsteem.clear();
 
-            let uploadGolos = document.getElementById('upload-golos');
-            arrGolos.size > 0 ? uploadGolos.removeAttribute('hidden') : uploadGolos.setAttribute('hidden', 'true')
+            let uploadSteemit = document.getElementById('upload-Steemit');
+            arrsteem.size > 0 ? uploadsteem.removeAttribute('hidden') : uploadsteem.setAttribute('hidden', 'true')
 
             swal({
                 position: 'top-end',
@@ -620,9 +621,9 @@ function sendRequest(wifPar, authorPar, status) {
     }); // add post
 }
 
-function uploadToGolos() {
+function uploadToSteemit() {
     auth(() => {
-        golos.api.getContent(username, constPermlik, function(err, result) {
+        steem.api.getContent(username, constPermlik, function(err, result) {
             result.id == 0 ? sendRequest(wif['posting'], username, 'post') : sendRequest(wif['posting'], username, 'comment');
             if (err) swal(err);
         });
@@ -630,13 +631,13 @@ function uploadToGolos() {
 }
 //get comments
 function getComments() {
-    golos.api.getContentReplies('golos', constPermlik, function(err, result) {});
+    steem.api.getContentReplies('Steemit', constPermlik, function(err, result) {});
 }
 
 function renderTableFromJson() {
-    const tb = document.getElementById('tbody_golos'),
-        tab = document.getElementById('table_golos');
-    document.getElementById('thead_golos').innerHTML = `
+    const tb = document.getElementById('tbody_Steemit'),
+        tab = document.getElementById('table_Steemit');
+    document.getElementById('thead_Steemit').innerHTML = `
                                 <th class="text-center">${document.getElementById('table-preview').innerHTML}</th>
                                 <th class="text-center">${document.getElementById('table-size').innerHTML}</th>
                                 <th class="text-center">${document.getElementById('table-hash').innerHTML}</th>
@@ -749,7 +750,7 @@ function getPostJson(authorPar, permlinkPar, result) {
         });
         renderTableFromJson();
     } else {
-        golos.api.getContentReplies(authorPar, permlinkPar, function(err, result) {
+        steem.api.getContentReplies(authorPar, permlinkPar, function(err, result) {
             for (let s in result) {
                 if (result[s].author == authorPar) {
                     let arr = JSON.parse(result[s].json_metadata);
@@ -762,27 +763,27 @@ function getPostJson(authorPar, permlinkPar, result) {
 }
 
 function noRecordsIpfs(){
-    document.getElementById('thead_golos').innerHTML = `<tr><th class="text-center"> ${document.getElementById('table-preview').innerHTML} </th></tr>`
-    document.getElementById('table_golos').removeAttribute('hidden');
-    let tb = document.getElementById('tbody_golos');
+    document.getElementById('thead_Steemit').innerHTML = `<tr><th class="text-center"> ${document.getElementById('table-preview').innerHTML} </th></tr>`
+    document.getElementById('table_Steemit').removeAttribute('hidden');
+    let tb = document.getElementById('tbody_Steemit');
     tb.innerHTML = '';
     tb.innerHTML = `<tr><td class="text-center">${document.getElementById('no-records-IPFS').innerHTML}</td></tr>`;
   /*  swal({
         html: document.getElementById('no-records-IPFS').innerHTML
     })*/
 }
-document.getElementById('golos-urls').addEventListener('click', function() {
+document.getElementById('Steemit-urls').addEventListener('click', function() {
     auth(() => {
-        golos.api.getContent(username, constPermlik, function(err, result) {
+        steem.api.getContent(username, constPermlik, function(err, result) {
             result.id == 0 ? noRecordsIpfs() : getPostJson(username, constPermlik, result);
             if (err) swal(err);
         });
     }, ['posting', 'active']);
 });
 
-document.getElementById('upload-golos').addEventListener('click', uploadToGolos, false);
+document.getElementById('upload-Steemit').addEventListener('click', uploadToSteemit, false);
 
-document.getElementById('aboutGolosImagesCallBtn').addEventListener('click', () => {
+document.getElementById('aboutSteemitImagesCallBtn').addEventListener('click', () => {
     swal({
         title: document.getElementById('about-html-title').innerHTML,
         html: document.getElementById('about-html').innerHTML,
@@ -831,6 +832,13 @@ document.getElementById('change-port').addEventListener('click', function() {
             elem[i].value = '';
         }
         modalChange.hide();
+    });
+    document.getElementById('support').addEventListener('click', () => {
+        swal({
+            html: document.getElementById('support-body').innerHTML,
+            showCloseButton: true,
+            showCancelButton: true
+        })
     });
     document.getElementById('change-node-ok').addEventListener('click', async () => {
         let {
