@@ -270,9 +270,10 @@
                 3. Add eventListener for upload button:
 <div class="text-left"><pre><code>&lt;script&gt;
 document.getElementById('upload').addEventListener('click', function() {
-    uploadImageToIpfs(function(files) {
-        console.log(files);
-    });
+    uploadImageToIpfs(function( err, files ) {
+        if (err) console.error(`IPFS ERROR: ${err}`)
+        else console.log(files[0][0])
+    })
 });
 &lt;/script&gt;</code></pre></div>
                 4. You can set remote addresses to your IPFS node:
@@ -288,15 +289,15 @@ function initCustomConnection() {
     </div>
     <script src="highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="i18nextBrowserLanguageDetector.min.js"></script>
-    <script src="bootstrap-native-v4.min.js"></script>
-    <script src="sweetalert2.all.min.js"></script>
-    <script src="ipfs.min.js"></script>
+    <script src="i18nextBrowserLanguageDetector.js"></script>
+    <script src="bootstrap-native-v4.js"></script>
+    <script src="sweetalert2.all.js"></script>
+    <script src="ipfs.js"></script>
     <script src="steem.min.js"></script>
-    <script src="dropzone.min.js"></script>
-    <script src="i18next.min.js"></script>
-    <script src="i18nextXHRBackend.min.js"></script>
-    <script src="findAndReplaceDOMText.min.js"></script>
+    <script src="dropzone.js"></script>
+    <script src="i18next.js"></script>
+    <script src="i18nextXHRBackend.js"></script>
+    <script src="findAndReplaceDOMText.js"></script>
     <script src="auth.js"></script>
     <script src="lang.js"></script>
     <script src="app.js"></script>

@@ -836,8 +836,8 @@ document.getElementById('change-port').addEventListener('click', function() {
     document.getElementById('support').addEventListener('click', () => {
         swal({
             html: document.getElementById('support-body').innerHTML,
-            showCloseButton: true,
-            showCancelButton: true
+            type:'question',
+            showCloseButton: true
         })
     });
     document.getElementById('change-node-ok').addEventListener('click', async () => {
