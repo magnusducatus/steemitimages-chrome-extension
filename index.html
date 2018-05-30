@@ -8,20 +8,21 @@
     <meta name="keywords" content="Steemit, Images, Service, GI, Steemit Images, Service, Steemitimages service, IPFS, Load, Load images, where store my images" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Service, Load images &amp; Store images on the blockchain Steemit | IPFS" />
-    <meta property="og:url" content="https://www.Steemitimages.com" />
-    <meta property="og:description" content="Steemitimaes this microservice for storage images on the blockchain Steemit and IPFS. This platform is a thin client, that works without a backend (only frontend and blockchain) directly on the GitHub Pages (through CloudFlare)." />
-    <meta property="og:image" content="https://Steemitimages.com/graphics/logo.png" />
-    <meta property="og:image:url" content="https://Steemitimages.com/graphics/logo.png" />
-    <meta property="og:image:secure_url" content="https://Steemitimages.com/graphics/logo.png" />
+    <meta property="og:url" content="https://www.steeimages.com" />
+    <meta property="og:description" content="Steemitimages this microservice for storage images on the blockchain Steemit and IPFS. This platform is a thin client, that works without a backend (only frontend and blockchain) directly on the GitHub Pages (through CloudFlare)." />
+    <meta property="og:image" content="https://steeimages.com/graphics/logo.png" />
+    <meta property="og:image:url" content="https://steeimages.com/graphics/logo.png" />
+    <meta property="og:image:secure_url" content="https://steeimages.com/graphics/logo.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://Steemitimages.com/" />
+    <meta name="twitter:url" content="https://steeimages.com/" />
     <meta name="twitter:title" content="Service, Load images &amp; Store images on the blockchain Steemit | IPFS" />
     <meta name="twitter:description" content="Steemitimaes this microservice for storage images on the blockchain Steemit and IPFS. This platform is a thin client, that works without a backend (only frontend and blockchain) directly on the GitHub Pages (through CloudFlare)." />
-    <meta name="twitter:image" content="https://Steemitimages.com/graphics/logo.png" />
+    <meta name="twitter:image" content="https://steeimages.com/graphics/logo.png" />
     
     <link rel="stylesheet" href="bootstrap.min.css"/>
     <link rel="stylesheet" href="dropzone.min.css"/>
+    <link rel="stylesheet" href="default.min.css"/>
     <link rel="stylesheet" href="custom.css"/>
 </head>
 <body>
@@ -51,7 +52,7 @@
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                         <li class="nav-item">
-                            <button class="btn btn-success my-2 my-sm-0" id="Steemit-urls"><span class="icon-link"></span> Get my files</button>
+                            <button class="btn btn-success my-2 my-sm-0" id="steem-urls"><span class="icon-link"></span> Get my files</button>
                         </li>
                     </ul>
                     <div class="form-inline my-2 my-lg-0" id="navbar-right">
@@ -136,7 +137,7 @@
             <div class="text-center"><br>If you have any ideas/problems / questions, you can report it:</div>
             <div class="text-left">
                 <br>1. GitHub в Issues: <strong><a href="https://github.com/magnusducatuslt/golosimages/issues" target="_blank">https://github.com/magnusducatuslt/steemitimages/issues</a></strong>
-                <br>2. Email:<strong><a href="info@golosimages.com" target="_blank">info@steemitimages.com</a></strong>
+                <br>2. Email:<strong><a href="info@golosimages.com" target="_blank">info@steeimages.com</a></strong>
             </div>
         </div>
     </div>
@@ -264,14 +265,14 @@
     <div id="integration-html" hidden="true">
         <div class="text-left">
                 1. Add JavaScript in your HTML-page: 
-                <pre><code>&lt;script src=&quot;https://Steemitimages.com/inject.js&quot;&gt;&lt;/script&gt;</pre></code>
+                <pre><code>&lt;script src=&quot;https://steeimages.com/inject.js&quot;&gt;&lt;/script&gt;</pre></code>
                 2. Add button in your HTML-page:
                 <pre><code>&lt;button id=&quot;upload&quot;&gt;Upload to IPFS&lt;/button&gt;</code></pre>
                 3. Add eventListener for upload button:
 <div class="text-left"><pre><code>&lt;script&gt;
 document.getElementById('upload').addEventListener('click', function() {
     uploadImageToIpfs(function( err, files ) {
-        if (err) console.error(`IPFS ERROR: ${err}`)
+        if (err) console.error(`IPFS error: ${err}`)
         else console.log(files[0][0])
     })
 });
@@ -287,13 +288,12 @@ function initCustomConnection() {
 &lt;/script&gt;</code></pre></div>
         </div>
     </div>
-    <script src="highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="highlight.js"></script>
     <script src="i18nextBrowserLanguageDetector.js"></script>
     <script src="bootstrap-native-v4.js"></script>
     <script src="sweetalert2.all.js"></script>
     <script src="ipfs.js"></script>
-    <script src="steem.min.js"></script>
+    <script src="steem.js"></script>
     <script src="dropzone.js"></script>
     <script src="i18next.js"></script>
     <script src="i18nextXHRBackend.js"></script>

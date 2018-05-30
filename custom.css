@@ -179,6 +179,9 @@ footer {
     height: 30px;
     width: 40px;
 }
+#chromewebstore{
+    height: 3rem;
+}
 hr {
     background-color: #f8f9fa;
 }

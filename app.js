@@ -81,17 +81,23 @@ function setPlaceholderIPFS(status) {
         }
     };
     document.getElementById('input-api-protocol').setAttribute('placeholder', con.api.protocol);
+    document.getElementById('input-api-protocol').value = con.api.protocol;
     document.getElementById('input-api-address').setAttribute('placeholder', con.api.address);
+    document.getElementById('input-api-address').value = con.api.address;
+    document.getElementById('input-api-port').value = con.api.port;
     document.getElementById('input-api-port').setAttribute('placeholder', con.api.port);
     document.getElementById('input-gateway-protocol').setAttribute('placeholder', con.gateway.protocol);
+    document.getElementById('input-gateway-protocol').value = con.gateway.protocol;
     document.getElementById('input-gateway-address').setAttribute('placeholder', con.gateway.address);
+    document.getElementById('input-gateway-address').value = con.gateway.address;
     document.getElementById('input-gateway-port').setAttribute('placeholder', con.gateway.port);
+    document.getElementById('input-gateway-port').value = con.gateway.port;
 }
 setPlaceholderIPFS(localStorage.connectionOption);
 
 let arrIpfs = [],
     arrTablTd = [],
-    arrSteemit = new Set(),
+    arrSteem = new Set(),
     arrJson = [];
 
 setInterval(checkOnline, 3000);
@@ -114,7 +120,7 @@ function copyToSteemit() {
     let tr = document.getElementById('tr' + this.id),
         but = document.getElementsByClassName(this.id),
         elem;
-    if (arrsteem.delete(this.id)) {
+    if (arrSteem.delete(this.id)) {
         tr.setAttribute('class', '');
         this.className = 'btn btn-success';
         this.innerHTML = '<span class="icon-checkmark"></span> Select to save';
@@ -122,13 +128,13 @@ function copyToSteemit() {
 
     } else {}
     if (!elem) {
-        arrsteem.add(this.id);
+        arrSteem.add(this.id);
         tr.setAttribute('class', 'table-success');
         this.className = 'btn btn-danger';
         this.innerHTML = '<span class="icon-cross"></span> Select to unsave';
     }
-    let uploadSteemit = document.getElementById('upload-Steemit');
-    arrsteem.size > 0 ? uploadsteem.removeAttribute('hidden') : uploadsteem.setAttribute('hidden', 'true')
+    let uploadSteem = document.getElementById('upload-steemit');
+    arrSteem.size > 0 ? uploadSteem.removeAttribute('hidden') : uploadSteem.setAttribute('hidden', 'true')
 }
 
 function copyLink(e) {
@@ -229,7 +235,6 @@ function sendToIpfs(data) {
                 img.heigth = 100;
                 img.width = 100;
                 a1.appendChild(img);
-                
                 let td2 = document.createElement('td');
                 td2.className = "text-center table-size-cell"
                 const result = file[i].size / 1000000;
@@ -563,18 +568,18 @@ Dropzone.options.dropzone = {
     }
 
 };
-let constPermlik = 'Steemit-save-url-test1';
+let constPermlik = 'steem-save-url-test1';
 // if permlink NOW be equal to BEFORE, before will change 
 // if parentPerm == perm - ok
 function sendRequest(wifPar, authorPar, status) {
     this.body = ''; // post text
     this.jsonMetadata = {
         app: 'Steemitimages/0.1',
-        canonical: `https://Steemitimages.com#${ username }/${ constPermlik }`,
+        canonical: `https://steeimages.com#${ username }/${ constPermlik }`,
         app_account: 'Steemitapps',
         data: []
     };
-    arrsteem.forEach((value) => {
+    arrSteem.forEach((value) => {
         this.jsonMetadata.data.push(host + value);
         this.body += '<p><img src="' + host + value + '"></img>';
     });
@@ -598,10 +603,10 @@ function sendRequest(wifPar, authorPar, status) {
 
     steem.broadcast.comment(this.wif, this.parentAuthor, this.parentPermlink, this.author, this.permlink, this.title, this.body, this.jsonMetadata, function(err, result) {
         if (!err) {
-            arrsteem.clear();
+            arrSteem.clear();
 
-            let uploadSteemit = document.getElementById('upload-Steemit');
-            arrsteem.size > 0 ? uploadsteem.removeAttribute('hidden') : uploadsteem.setAttribute('hidden', 'true')
+            let uploadSteem = document.getElementById('upload-Steemit');
+            arrSteem.size > 0 ? uploadSteem.removeAttribute('hidden') : uploadSteem.setAttribute('hidden', 'true')
 
             swal({
                 position: 'top-end',
@@ -766,7 +771,7 @@ function noRecordsIpfs(){
         html: document.getElementById('no-records-IPFS').innerHTML
     })*/
 }
-document.getElementById('Steemit-urls').addEventListener('click', function() {
+document.getElementById('steem-urls').addEventListener('click', function() {
     auth(() => {
         steem.api.getContent(username, constPermlik, function(err, result) {
             result.id == 0 ? noRecordsIpfs() : getPostJson(username, constPermlik, result);
@@ -827,13 +832,6 @@ document.getElementById('change-port').addEventListener('click', function() {
         }
         modalChange.hide();
     });
-    document.getElementById('support').addEventListener('click', () => {
-        swal({
-            html: document.getElementById('support-body').innerHTML,
-            type:'question',
-            showCloseButton: true
-        })
-    });
     document.getElementById('change-node-ok').addEventListener('click', async () => {
         let {
             obj: full,
@@ -883,6 +881,14 @@ document.getElementById('change-port').addEventListener('click', function() {
             });
         }
     });
+});
+document.getElementById('support').addEventListener('click', () => {
+    swal({
+        html: document.getElementById('support-body').innerHTML,
+        showCloseButton: true,
+        width: 600,
+        type: 'question'
+    })
 });
 async function getInputsFromChange() {
     let obj = {
