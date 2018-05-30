@@ -116,7 +116,7 @@ function checkOnline() {
         })
 }
 
-function copyToSteemit() {
+function copyToSteem() {
     let tr = document.getElementById('tr' + this.id),
         but = document.getElementsByClassName(this.id),
         elem;
@@ -133,7 +133,7 @@ function copyToSteemit() {
         this.className = 'btn btn-danger';
         this.innerHTML = '<span class="icon-cross"></span> Select to unsave';
     }
-    let uploadSteem = document.getElementById('upload-steemit');
+    let uploadSteem = document.getElementById('upload-steem');
     arrSteem.size > 0 ? uploadSteem.removeAttribute('hidden') : uploadSteem.setAttribute('hidden', 'true')
 }
 
@@ -176,7 +176,7 @@ function arrayBufToB64(buffer) {
     return window.btoa(binary);
 }
 
-function copyLinkSteemit(e) {
+function copyLinkSteem(e) {
     this.id = e.target.id;
     document.getElementById(this.id).value = this.id;
     document.getElementById(this.id).select();
@@ -309,7 +309,7 @@ function sendToIpfs(data) {
                 td4but2.type = 'button';
                 td4but2.innerHTML = '<span class="icon-checkmark"></span> Select to save';
                 td4but2.id = file[i].hash;
-                td4but2.onclick = copyToSteemit;
+                td4but2.onclick = copyToSteem;
                 td4.appendChild(td4div1);
                 td4div1.appendChild(td4but1);
                 td4div1.appendChild(td4br);
@@ -574,9 +574,9 @@ let constPermlik = 'steem-save-url-test1';
 function sendRequest(wifPar, authorPar, status) {
     this.body = ''; // post text
     this.jsonMetadata = {
-        app: 'Steemitimages/0.1',
+        app: 'steemimages/0.1',
         canonical: `https://steeimages.com#${ username }/${ constPermlik }`,
-        app_account: 'Steemitapps',
+        app_account: 'steemapps',
         data: []
     };
     arrSteem.forEach((value) => {
@@ -588,7 +588,7 @@ function sendRequest(wifPar, authorPar, status) {
     this.wif = wifPar; // // private posting key
     //this.permlink = 'testphotook'; // post url-adress
     //this.parentPermlink = 'photo'; // main tag
-    constPermlik != this.permlink ? this.parentAuthor = '' : this.parentAuthor = 'Steemit';
+    constPermlik != this.permlink ? this.parentAuthor = '' : this.parentAuthor = 'steem';
     constPermlik != this.permlink ? this.parentPermlink = 'post' : this.parentPermlink = this.permlink;
     if (status == 'comment') {
         this.parentAuthor = this.author;
@@ -605,7 +605,7 @@ function sendRequest(wifPar, authorPar, status) {
         if (!err) {
             arrSteem.clear();
 
-            let uploadSteem = document.getElementById('upload-Steemit');
+            let uploadSteem = document.getElementById('upload-steem');
             arrSteem.size > 0 ? uploadSteem.removeAttribute('hidden') : uploadSteem.setAttribute('hidden', 'true')
 
             swal({
@@ -620,7 +620,7 @@ function sendRequest(wifPar, authorPar, status) {
     }); // add post
 }
 
-function uploadToSteemit() {
+function uploadToSteem() {
     auth(() => {
         steem.api.getContent(username, constPermlik, function(err, result) {
             result.id == 0 ? sendRequest(wif['posting'], username, 'post') : sendRequest(wif['posting'], username, 'comment');
@@ -630,13 +630,13 @@ function uploadToSteemit() {
 }
 //get comments
 function getComments() {
-    steem.api.getContentReplies('Steemit', constPermlik, function(err, result) {});
+    steem.api.getContentReplies('steem', constPermlik, function(err, result) {});
 }
 
 function renderTableFromJson() {
-    const tb = document.getElementById('tbody_Steemit'),
-        tab = document.getElementById('table_Steemit');
-    document.getElementById('thead_Steemit').innerHTML = `
+    const tb = document.getElementById('tbody_steem'),
+        tab = document.getElementById('table_steem');
+    document.getElementById('thead_steem').innerHTML = `
                                 <th class="text-center">${document.getElementById('table-preview').innerHTML}</th>
                                 <th class="text-center">${document.getElementById('table-size').innerHTML}</th>
                                 <th class="text-center">${document.getElementById('table-hash').innerHTML}</th>
@@ -762,9 +762,9 @@ function getPostJson(authorPar, permlinkPar, result) {
 }
 
 function noRecordsIpfs(){
-    document.getElementById('thead_Steemit').innerHTML = `<tr><th class="text-center"> ${document.getElementById('table-preview').innerHTML} </th></tr>`
-    document.getElementById('table_Steemit').removeAttribute('hidden');
-    let tb = document.getElementById('tbody_Steemit');
+    document.getElementById('thead_steem').innerHTML = `<tr><th class="text-center"> ${document.getElementById('table-preview').innerHTML} </th></tr>`
+    document.getElementById('table_steem').removeAttribute('hidden');
+    let tb = document.getElementById('tbody_steem');
     tb.innerHTML = '';
     tb.innerHTML = `<tr><td class="text-center">${document.getElementById('no-records-IPFS').innerHTML}</td></tr>`;
   /*  swal({
@@ -780,9 +780,9 @@ document.getElementById('steem-urls').addEventListener('click', function() {
     }, ['posting', 'active']);
 });
 
-document.getElementById('upload-Steemit').addEventListener('click', uploadToSteemit, false);
+document.getElementById('upload-steem').addEventListener('click', uploadToSteem, false);
 
-document.getElementById('aboutSteemitImagesCallBtn').addEventListener('click', () => {
+document.getElementById('aboutSteemImagesCallBtn').addEventListener('click', () => {
     swal({
         title: document.getElementById('about-html-title').innerHTML,
         html: document.getElementById('about-html').innerHTML,
