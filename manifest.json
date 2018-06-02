@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "SteemitImages",
-	"version": "1.3.2",
+	"version": "1.4.3",
 	"icons": { 
 		"16": "icon_16.png",
 		"19": "icon_19.png",
@@ -11,7 +11,7 @@
 		"128": "icon_128.png"
 	},
 	"description": "SteemitImages - this Chrome extension for storing images on the blockchain Steemit and IPFS.",
-	"homepage_url": "https://steemitimages.com/",
+	"homepage_url": "https://steeimages.com/",
 	"offline_enabled": false,
 	"background": {
 		"persistent": false,

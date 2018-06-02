@@ -19,6 +19,7 @@ function initConnection(connection) {
     });
     host = `${ connection.gateway.protocol }://${ connection.gateway.address }:${ connection.gateway.port }/ipfs/`;
 };
+
 const connectionDefault = {
         api: {
             protocol: `http`,
